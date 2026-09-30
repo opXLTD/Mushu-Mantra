@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opportunities | BUGINGO Ally Baba</title>
+<meta name="description" content="Job, scholarship, admission and internship opportunities — with application support.">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../theme.js"></script>
+<style>
+:root{
+    --primary:#38bdf8;
+    --accent:#facc15;
+    --dark:#0b1220;
+    --bg-gradient: linear-gradient(to bottom, #0b1220, #0f172a);
+    --card:#111827;
+    --nav-bg: rgba(11,18,32,0.9);
+    --nav-border: rgba(255,255,255,0.05);
+    --card-border: rgba(255,255,255,0.05);
+    --text:#e5e7eb;
+    --dim:#9ca3af;
+    --success:#22c55e;
+}
+html[data-theme="light"]{
+    --primary:#0284c7;
+    --accent:#d97706;
+    --dark:#ffffff;
+    --bg-gradient:linear-gradient(to bottom,#f8fafc,#e2e8f0);
+    --card:#ffffff;
+    --nav-bg:rgba(255,255,255,0.92);
+    --nav-border:rgba(0,0,0,0.1);
+    --card-border:rgba(0,0,0,0.1);
+    --text:#0f172a;
+    --dim:#475569;
+}
+html{background:var(--dark);}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-gradient);color:var(--text);line-height:1.7;min-height:100vh;transition:background .3s ease,color .3s ease;}
+nav{position:sticky;top:0;background:var(--nav-bg);backdrop-filter:blur(12px);padding:18px 8%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--nav-border);z-index:1000;}
+.logo{font-weight:800;font-size:18px;color:var(--primary);text-decoration:none;}
+.nav-links a{text-decoration:none;color:var(--text);margin-left:24px;font-weight:600;font-size:14px;}
+.nav-links a:hover{color:var(--primary);}
+.theme-toggle{background:transparent;border:1px solid var(--card-border);color:var(--text);padding:6px 12px;border-radius:8px;margin-left:24px;cursor:pointer;font-size:13px;}
+
+.page-head{padding:60px 8% 20px;text-align:center;}
+.page-head h1{font-size:clamp(28px,4vw,42px);font-weight:800;}
+.page-head p{color:var(--dim);max-width:560px;margin:12px auto 0;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:22px;padding:20px 8% 80px;max-width:1200px;margin:0 auto;}
+
+.opp-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:22px;display:flex;flex-direction:column;}
+.opp-badge{display:inline-block;background:rgba(56,189,248,0.15);color:var(--primary);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:20px;margin-bottom:12px;width:fit-content;}
+.opp-card h3{font-size:19px;margin-bottom:4px;}
+.opp-provider{color:var(--dim);font-size:13px;margin-bottom:12px;}
+.opp-section{font-size:13.5px;margin-bottom:10px;}
+.opp-section b{display:block;font-size:11px;text-transform:uppercase;color:var(--dim);letter-spacing:.4px;margin-bottom:2px;}
+.opp-deadline{font-size:13px;color:var(--accent);font-weight:700;margin:10px 0;}
+.opp-actions{margin-top:auto;display:flex;gap:10px;padding-top:14px;flex-wrap:wrap;}
+.btn-apply{background:var(--primary);color:#001521;font-weight:700;padding:10px 16px;border-radius:8px;text-decoration:none;font-size:13px;flex:1;text-align:center;}
+.btn-help{background:transparent;border:1px solid var(--card-border);color:var(--text);padding:10px 16px;border-radius:8px;text-decoration:none;font-size:13px;flex:1;text-align:center;}
+
+.empty-state{grid-column:1/-1;text-align:center;color:var(--dim);padding:60px 20px;}
+footer{text-align:center;padding:30px;color:var(--dim);font-size:13px;border-top:1px solid var(--card-border);}
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="../index.html" class="logo">BUGINGO Ally Baba</a>
+    <div class="nav-links">
+        <a href="../index.html#about">About</a>
+        <a href="../index.html#projects">Projects</a>
+        <a href="index.html">Opportunities</a>
+        <a href="../index.html#contact">Contact</a>
+        <button class="theme-toggle" type="button" id="themeBtn"></button>
+    </div>
+</nav>
+
+<div class="page-head">
+    <h1>Opportunities</h1>
+    <p>Jobs, scholarships, admissions, fellowships and internships — reviewed and organized so you can apply with confidence.</p>
+</div>
+
+<div class="grid" id="grid">
+    <div class="empty-state">Loading opportunities…</div>
+</div>
+
+<footer>© 2026 BUGINGO Ally Baba | Application Support | Kigali, Rwanda</footer>
+
+<script>
+const SUPABASE_URL = "https://mfnndtyhmlofqegzdbrw.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbm5kdHlobWxvZnFlZ3pkYnJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MDAxNzIsImV4cCI6MjEwNTk3NjE3Mn0.wj9YWt67wDVp5cl6tIBlvywz7nshCSBg9cJUGp--cBA"; 
+    
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+function esc(s){ return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function card(p) {
+  const f = p.generated_flyer || {};
+  const offers = (f.offers || []).filter(Boolean).join(', ');
+  const eligibility = (f.eligibility || []).filter(Boolean).join(', ');
+  const applyLink = f.officialApplication?.link || '#';
+  const applyMethod = f.officialApplication?.method || 'View details';
+  const helpContact = f.needHelp?.contact || '';
+
+  return `<div class="opp-card">
+    <span class="opp-badge">${esc(f.opportunityType || 'Opportunity')}</span>
+    <h3>${esc(f.title)}</h3>
+    <div class="opp-provider">${esc(f.provider)}${f.location ? ' — ' + esc(f.location) : ''}</div>
+    ${f.whatIsIt ? `<div class="opp-section"><b>What is it</b>${esc(f.whatIsIt)}</div>` : ''}
+    ${offers ? `<div class="opp-section"><b>Offers</b>${esc(offers)}</div>` : ''}
+    ${eligibility ? `<div class="opp-section"><b>Eligibility</b>${esc(eligibility)}</div>` : ''}
+    ${f.deadline ? `<div class="opp-deadline">Deadline: ${esc(f.deadline)}</div>` : ''}
+    <div class="opp-actions">
+      <a class="btn-apply" href="${esc(applyLink)}" target="_blank" rel="noopener">${esc(applyMethod) || 'Apply'}</a>
+      ${helpContact ? `<a class="btn-help" href="https://wa.me/?text=${encodeURIComponent('Hi, I need help applying for: ' + (f.title||''))}" target="_blank" rel="noopener">Need Help? Contact Us</a>` : ''}
+    </div>
+  </div>`;
+}
+
+async function loadOpportunities() {
+  const grid = document.getElementById('grid');
+  try {
+    const { data, error } = await supabase
+      .from('poster_requests')
+      .select('*')
+      .eq('published', true)
+      .order('published_at', { ascending: false });
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      grid.innerHTML = '<div class="empty-state">No opportunities published yet — check back soon.</div>';
+      return;
+    }
+    grid.innerHTML = data.map(card).join('');
+  } catch (e) {
+    grid.innerHTML = '<div class="empty-state">Couldn\'t load opportunities right now. Please refresh.</div>';
+  }
+}
+
+loadOpportunities();
+</script>
+<script src="../js/auth-widget.js" defer></script>
+</body>
+</html>

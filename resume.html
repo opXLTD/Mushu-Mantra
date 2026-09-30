@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bugingo Ally Baba | Curriculum Vitae</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#e5e7eb;
+    --accent:#60a5fa;
+    --text:#cbd5e1;
+    --light:#94a3b8;
+    --bg:#0b1220;
+    --surface:#111827;
+    --btn-bg:#38bdf8;
+    --btn-text:#000000;
+}
+html[data-theme="light"]{
+    --primary:#111827;
+    --accent:#2563eb;
+    --text:#374151;
+    --light:#6b7280;
+    --bg:#f3f4f6;
+    --surface:#ffffff;
+    --btn-bg:#111827;
+    --btn-text:#ffffff;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:var(--bg);
+    padding:20px;
+}
+
+/* TOP NAVIGATION / BACK BUTTON */
+.nav-bar{
+    max-width:900px;
+    margin:0 auto 20px auto;
+    display:flex;
+    justify-content:flex-start;
+}
+
+.back-btn{
+    display:inline-block;
+    text-decoration:none;
+    background:var(--primary);
+    color:white;
+    padding:10px 20px;
+    border-radius:8px;
+    font-weight:600;
+    font-size:14px;
+    transition:background 0.3s ease, transform 0.2s ease;
+}
+
+.back-btn:hover{
+    background:var(--accent);
+    transform:translateY(-2px);
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:60px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+    border-radius:12px;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:40px;
+}
+
+.header-text h1{
+    font-size:28px;
+    font-weight:800;
+    color:var(--primary);
+}
+
+.header-text p{
+    margin-top:6px;
+    color:var(--accent);
+    font-weight:600;
+}
+
+.contact{
+    margin-top:12px;
+    font-size:14px;
+    color:var(--text);
+}
+
+.photo{
+    width:140px;
+    border-radius:10px;
+}
+
+/* SECTION */
+.section{
+    margin-top:35px;
+}
+
+.section h2{
+    font-size:14px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--accent);
+    margin-bottom:15px;
+}
+
+.item{
+    margin-bottom:15px;
+    font-size:14px;
+    color:var(--text);
+}
+
+.item strong{
+    color:var(--primary);
+}
+
+ul{
+    padding-left:18px;
+}
+
+li{
+    margin-bottom:6px;
+    font-size:14px;
+}
+
+/* DECLARATION */
+.declaration{
+    margin-top:40px;
+    font-size:14px;
+}
+
+.signature{
+    margin-top:20px;
+    font-weight:600;
+}
+
+/* PRINT & MOBILE STYLES */
+@media print{
+    .nav-bar{
+        display:none; /* Hides back button when printing/saving to PDF */
+    }
+    body{
+        padding:0;
+        background:white;
+    }
+    .container{
+        box-shadow:none;
+        padding:0;
+    }
+}
+
+@media(max-width:768px){
+    .header{
+        flex-direction:column-reverse;
+        text-align:center;
+        gap:20px;
+    }
+}
+
+/* THEME OVERRIDES */
+html{background:var(--bg);}
+.container{background:var(--surface);}
+.back-btn{background:var(--btn-bg);color:var(--btn-text);}
+.back-btn:hover{background:var(--accent);color:#fff;}
+.nav-bar{align-items:center;justify-content:space-between;}
+
+/* THEME TOGGLE BUTTON */
+.theme-toggle{background:transparent;border:1px solid var(--primary);color:var(--text);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.3s}
+.theme-toggle:hover{background:var(--primary);color:#000}
+
+/* Always print the CV in light colours */
+@media print{
+    html,html[data-theme="dark"]{--primary:#111827;--accent:#2563eb;--text:#374151;--light:#6b7280;--bg:#ffffff;--surface:#ffffff;}
+    .theme-toggle{display:none;}
+}
+</style>
+<script src="theme.js"></script>
+</head>
+
+<body>
+
+<!-- BACK BUTTON -->
+<div class="nav-bar">
+    <a href="index.html" class="back-btn">← Back to Portfolio</a>
+    <button class="theme-toggle" type="button" id="themeBtn"></button>
+</div>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-text">
+            <h1>BUGINGO ALLY BABA</h1>
+            <div class="section">
+                <h2>Professional Summary</h2>
+                <div class="item">
+                    Motivated Web Developer and IT Specialist focused on building fast, secure and scalable digital solutions. Passionate about clean code, performance optimization and delivering real business impact.
+                </div>
+            </div>
+
+            <div class="contact">
+                Kigali, Rwanda<br>
+                Email: allybababugingo@gmail.com<br>
+                Phone: +250 788 362 668 (Call) | +250 788 342 020 (WhatsApp)
+            </div>
+        </div>
+
+        <img src="image_0.jpg" alt="Bugingo Ally Baba" class="photo">
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="section">
+        <h2>Education</h2>
+
+        <div class="item">
+            <strong>University of Kigali</strong><br>
+            Bachelor’s Degree in Information Technology (In Progress)
+        </div>
+
+        <div class="item">
+            <strong>ES Kidaho</strong> (2022 – 2025)<br>
+            Advanced Level Certificate – Mathematics, Chemistry, Biology
+        </div>
+
+        <div class="item">
+            <strong>Muhabura Integrated Polytechnic College, Musanze</strong> (2022)<br>
+            Studied Software Development (Briefly attended before changing combination)
+        </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="section">
+        <h2>Technical Skills</h2>
+        <ul>
+            <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript</li>
+            <li><strong>Programming:</strong> C Language</li>
+            <li><strong>Tools:</strong> Git, GitHub, VS Code</li>
+            <li><strong>Deployment:</strong> Vercel</li>
+        </ul>
+    </div>
+
+    <!-- LANGUAGES -->
+    <div class="section">
+        <h2>Languages</h2>
+        <ul>
+            <li>Kinyarwanda – Fluent</li>
+            <li>English – Good</li>
+            <li>Swahili – Beginner</li>
+            <li>French – Beginner</li>
+        </ul>
+    </div>
+
+    <!-- CERTIFICATIONS -->
+    <div class="section">
+        <h2>Certifications</h2>
+        <ul>
+            <li>PLP Certificate – Peace and Love Proclaimers (2025)</li>
+            <li>Digital Skills Foundation – Google/RDB (2025)</li>
+        </ul>
+    </div>
+
+    <!-- PROJECTS & ACTIVITIES -->
+    <div class="section">
+        <h2>Projects & Activities</h2>
+        <ul>
+            <li><strong>Jarvis Smart Home Assistant</strong> – Self-initiated automation and voice control project</li>
+            <li><strong>Isoko Web</strong> – Designed and developed a fully responsive digital platform deployed on Vercel.</li>
+            <li><strong>Abouba's shop</strong> – Designed and developed a fully responsive digital marketplace platform.</li>
+            <li>Workshops Facilitator – Organized seminars on conflict resolution and social responsibility</li>
+            <li>Technology Blogger – Writes about programming and innovation</li>
+            <li>Gaming & Programming – Personal hobbies that enhance creativity and logic</li>
+        </ul>
+    </div>
+
+    <!-- ACHIEVEMENTS -->
+    <div class="section">
+        <h2>Achievements</h2>
+        <ul>
+            <li>Co-Founder of Peace and Love Proclaimers (PLP) at ES Gisenyi & ES Kidaho</li>
+            <li>Led peace-building campaigns and awareness events in school communities</li>
+            <li><strong>Isoko Web</strong> – Designed and developed a fully responsive marketplace platform deployed on Vercel.</li>
+        </ul>
+    </div>
+
+    <!-- REFERENCES -->
+    <div class="section">
+        <h2>References</h2>
+        <div class="item">
+            Available upon request.
+        </div>
+    </div>
+
+</div>
+
+<script src="js/auth-widget.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buy & Sell | Post Items For Sale | BUGINGO Ally Baba</title>
+<meta name="description" content="Post an item for sale or browse items and contact sellers directly on WhatsApp. Want the highest price? Start an online auction.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#38bdf8;--accent:#facc15;--card:#111827;--text:#e5e7eb;--dim:#9ca3af;--ok:#22c55e;--bad:#ef4444;
+--nav-bg:rgba(11,18,32,.9);--line:rgba(255,255,255,.08);--page-bg:linear-gradient(to bottom,#0b1220,#0f172a);--field:#0b1220}
+html[data-theme="light"]{--primary:#0284c7;--accent:#d97706;--card:#fff;--text:#0f172a;--dim:#475569;
+--nav-bg:rgba(255,255,255,.92);--line:rgba(0,0,0,.1);--page-bg:linear-gradient(to bottom,#f8fafc,#e2e8f0);--field:#f8fafc}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+html{background:var(--page-bg);scroll-behavior:smooth}
+body{background:var(--page-bg);color:var(--text);line-height:1.6;min-height:100vh}
+nav{position:sticky;top:0;z-index:10;background:var(--nav-bg);backdrop-filter:blur(12px);padding:16px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.logo{font-weight:800;color:var(--primary);text-decoration:none}
+.nav-right{display:flex;gap:12px;align-items:center}
+.btn{display:inline-block;border:0;cursor:pointer;text-decoration:none;font-weight:700;font-size:14px;padding:10px 18px;border-radius:10px;background:var(--primary);color:#fff}
+.btn.alt{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn.warn{background:var(--bad)}
+.btn.wa{background:#25D366}
+.btn.gold{background:var(--accent);color:#000}
+.btn.small{padding:6px 12px;font-size:12px}
+.theme-toggle{background:transparent;border:1px solid var(--primary);color:var(--text);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:600}
+main{max-width:1100px;margin:auto;padding:40px 6% 60px}
+h1{font-size:34px;font-weight:800}
+h1 span{color:var(--primary)}
+.sub{color:var(--dim);margin:8px 0 22px}
+.promo{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:18px 22px;margin-bottom:28px}
+.promo b{font-size:17px}
+.promo p{color:var(--dim);font-size:14px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+.bar input,.bar select{flex:1;min-width:150px}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--text);font-size:14px}
+textarea{resize:vertical;min-height:80px}
+label{font-size:13px;font-weight:600;color:var(--dim);display:block;margin-bottom:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card .img{height:180px;background:var(--field) center/cover;display:flex;align-items:center;justify-content:center;font-size:40px}
+.body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.body h3{font-size:18px;color:var(--accent)}
+.desc{color:var(--dim);font-size:14px;flex:1}
+.price{font-size:22px;font-weight:800;color:var(--ok)}
+.meta{font-size:12px;color:var(--dim)}
+.tag{font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;background:rgba(56,189,248,.15);color:var(--primary);align-self:flex-start}
+.sold{opacity:.55}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--dim);padding:60px 0;border:1px dashed var(--line);border-radius:16px;grid-column:1/-1}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;z-index:50}
+.modal.open{display:flex}
+.form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;width:100%;max-width:520px;display:grid;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;display:none;z-index:99}
+@media(max-width:600px){.two{grid-template-columns:1fr}h1{font-size:26px}}
+</style>
+<script src="theme.js"></script>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">BUGINGO Ally Baba</a>
+  <div class="nav-right">
+    <a href="auction.html" class="btn gold small">🔨 Auctions</a>
+    <a href="index.html" class="btn alt small">← Home</a>
+    <button class="theme-toggle" type="button"></button>
+  </div>
+</nav>
+
+<main>
+  <h1>Buy & <span>Sell</span></h1>
+  <p class="sub">Post anything you want to sell. Buyers contact you directly on WhatsApp.</p>
+
+  <!-- LINK TO THE AUCTION PAGE -->
+  <div class="promo">
+    <div>
+      <b>🔨 Want the highest price? Sell it by auction.</b>
+      <p>Set a starting price and a timer, and let buyers bid against each other.</p>
+    </div>
+    <a href="auction.html" class="btn gold">Go to Auction Page →</a>
+  </div>
+
+  <div class="bar">
+    <input id="q" placeholder="Search items..." oninput="render()">
+    <select id="cat" onchange="render()">
+      <option value="">All categories</option>
+    </select>
+    <button class="btn" onclick="openForm()">+ Post an Item</button>
+  </div>
+
+  <div id="list" class="grid"></div>
+</main>
+
+<!-- POST ITEM -->
+<div class="modal" id="modal">
+  <form class="form" onsubmit="postItem(event)">
+    <h2>Post an Item for Sale</h2>
+    <div><label>Item title</label><input id="fTitle" required maxlength="60" placeholder="e.g. HP Laptop 8GB RAM"></div>
+    <div class="two">
+      <div><label>Category</label><select id="fCat" required></select></div>
+      <div><label>Price (RWF)</label><input id="fPrice" type="number" min="0" required></div>
+    </div>
+    <div><label>Description</label><textarea id="fDesc" required maxlength="400" placeholder="Condition, size, location..."></textarea></div>
+    <div><label>Photo</label><input id="fImg" type="file" accept="image/*"></div>
+    <div class="two">
+      <div><label>Your name</label><input id="fSeller" required maxlength="40"></div>
+      <div><label>WhatsApp (e.g. 250788...)</label><input id="fPhone" required pattern="[0-9]{9,15}"></div>
+    </div>
+    <div><label>Seller PIN (needed to mark sold / delete)</label><input id="fPin" required maxlength="10" placeholder="e.g. 1234"></div>
+    <div class="row">
+      <button class="btn" type="submit">Publish Item</button>
+      <button class="btn alt" type="button" onclick="closeForm()">Cancel</button>
+      <a class="btn gold" href="auction.html">Sell by auction instead</a>
+    </div>
+  </form>
+</div>
+<div id="toast"></div>
+
+<script>
+var KEY='listings', CATS=['Phones & Electronics','Computers','Fashion','Home & Furniture','Vehicles','Services','Other'];
+var NOTIFY_SECRET='d84de3063d0b0656d80b080bd0b5ade0'; // must match the NOTIFY_SECRET env var on Vercel
+var items=load();
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(items))}
+  catch(e){toast('Storage full - delete old items or use a smaller photo')}}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function rwf(n){return Number(n).toLocaleString('en-US')+' RWF'}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';
+  clearTimeout(t._h);t._h=setTimeout(function(){t.style.display='none'},2600)}
+
+['cat','fCat'].forEach(function(id){
+  var s=document.getElementById(id);
+  CATS.forEach(function(c){var o=document.createElement('option');o.value=o.textContent=c;s.appendChild(o)});
+});
+
+function render(){
+  var q=document.getElementById('q').value.toLowerCase(),c=document.getElementById('cat').value;
+  var list=items.filter(function(i){
+    return (!c||i.cat===c)&&(!q||(i.title+' '+i.desc).toLowerCase().indexOf(q)>-1)
+  }).sort(function(a,b){return (a.sold-b.sold)||(b.t-a.t)});
+  var box=document.getElementById('list');
+  if(!list.length){box.innerHTML='<div class="empty">Nothing here yet. Click "+ Post an Item" to list the first one.</div>';return}
+  box.innerHTML=list.map(function(i){
+    var msg=encodeURIComponent('Hello '+i.seller+', I am interested in "'+i.title+'" ('+rwf(i.price)+').');
+    return '<div class="card '+(i.sold?'sold':'')+'"><div class="img" '+(i.img?'style="background-image:url('+i.img+')"':'')+'>'+(i.img?'':'📦')+'</div>'+
+    '<div class="body"><span class="tag">'+(i.sold?'SOLD':esc(i.cat))+'</span><h3>'+esc(i.title)+'</h3>'+
+    '<p class="desc">'+esc(i.desc)+'</p><div class="price">'+rwf(i.price)+'</div>'+
+    '<div class="meta">by '+esc(i.seller)+' · '+new Date(i.t).toLocaleDateString()+'</div>'+
+    '<div class="row">'+(i.sold?'':'<button class="btn wa small" onclick="buyItem(\''+i.phone+'\',\''+msg+'\')">💬 Contact seller</button>'+
+    '<button class="btn alt small" onclick="mark(\''+i.id+'\')">Mark sold</button>')+
+    '<button class="btn warn small" onclick="del(\''+i.id+'\')">Delete</button></div></div></div>';
+  }).join('');
+}
+
+function buyItem(phone,msg){
+  function go(){ window.open('https://wa.me/'+phone+'?text='+msg,'_blank') }
+  if(window.AuthWidget){ window.AuthWidget.requireAccount(go,'Create a free account to contact the seller and buy this item.') }
+  else { go() }
+}
+function pinOk(i){var p=prompt('Enter the seller PIN:');if(p===null)return false;if(p!==i.pin){toast('Wrong PIN');return false}return true}
+function find(id){return items.find(function(x){return x.id===id})}
+function mark(id){var i=find(id);if(i&&pinOk(i)){i.sold=true;save();render()}}
+function del(id){var i=find(id);if(i&&pinOk(i)&&confirm('Delete this item?')){items=items.filter(function(x){return x.id!==id});save();render()}}
+
+function openForm(){document.getElementById('modal').classList.add('open')}
+function closeForm(){document.getElementById('modal').classList.remove('open')}
+
+function shrink(file,cb){
+  if(!file)return cb('');
+  var r=new FileReader();
+  r.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      var s=Math.min(1,600/im.width),c=document.createElement('canvas');
+      c.width=im.width*s;c.height=im.height*s;
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      cb(c.toDataURL('image/jpeg',0.7));
+    };
+    im.onerror=function(){cb('')};
+    im.src=r.result;
+  };
+  r.readAsDataURL(file);
+}
+
+function postItem(e){
+  e.preventDefault();
+  var v=function(i){return document.getElementById(i).value.trim()};
+  shrink(document.getElementById('fImg').files[0],function(img){
+    var newItem={id:'i'+Date.now(),t:Date.now(),title:v('fTitle'),cat:v('fCat'),price:parseInt(v('fPrice'),10),
+      desc:v('fDesc'),img:img,seller:v('fSeller'),phone:v('fPhone'),pin:v('fPin'),sold:false};
+    items.push(newItem);
+    save();e.target.reset();closeForm();render();toast('Item published!');
+    notifySubscribers('buy_sell', newItem.title, newItem.desc, location.href, rwf(newItem.price));
+  });
+}
+
+function notifySubscribers(type,title,description,link,extra){
+  fetch('/api/notify',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Notify-Secret':NOTIFY_SECRET},
+    body:JSON.stringify({type:type,title:title,description:description,link:link,extra:extra})
+  }).catch(function(){ /* fail silently — never block the user's action */ });
+}
+
+render();
+</script>
+<script src="js/auth-widget.js" defer></script>
+</body>
+</html>

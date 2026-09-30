@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Auction | Buy & Sell | BUGINGO Ally Baba</title>
+<meta name="description" content="Create an online auction in minutes. Sellers list items, buyers place bids, the highest bidder wins.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#38bdf8;--accent:#facc15;--card:#111827;--text:#e5e7eb;--dim:#9ca3af;--ok:#22c55e;--bad:#ef4444;
+--nav-bg:rgba(11,18,32,.9);--line:rgba(255,255,255,.08);--page-bg:linear-gradient(to bottom,#0b1220,#0f172a);--field:#0b1220}
+html[data-theme="light"]{--primary:#0284c7;--accent:#d97706;--card:#fff;--text:#0f172a;--dim:#475569;
+--nav-bg:rgba(255,255,255,.92);--line:rgba(0,0,0,.1);--page-bg:linear-gradient(to bottom,#f8fafc,#e2e8f0);--field:#f8fafc}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+html{background:var(--page-bg);scroll-behavior:smooth}
+body{background:var(--page-bg);color:var(--text);line-height:1.6;min-height:100vh}
+nav{position:sticky;top:0;z-index:10;background:var(--nav-bg);backdrop-filter:blur(12px);padding:16px 6%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}
+.logo{font-weight:800;color:var(--primary);text-decoration:none}
+.nav-right{display:flex;gap:12px;align-items:center}
+.btn{display:inline-block;border:0;cursor:pointer;text-decoration:none;font-weight:700;font-size:14px;padding:10px 18px;border-radius:10px;background:var(--primary);color:#fff}
+.btn.alt{background:transparent;border:1px solid var(--primary);color:var(--primary)}
+.btn.warn{background:var(--bad)}
+.btn.small{padding:6px 12px;font-size:12px}
+.theme-toggle{background:transparent;border:1px solid var(--primary);color:var(--text);padding:6px 14px;border-radius:20px;cursor:pointer;font-size:14px;font-weight:600}
+main{max-width:1100px;margin:auto;padding:40px 6% 60px}
+h1{font-size:34px;font-weight:800}
+h1 span{color:var(--primary)}
+.sub{color:var(--dim);margin:8px 0 26px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:24px}
+.tabs{display:flex;gap:8px}
+.tabs button{background:transparent;border:1px solid var(--line);color:var(--text);padding:8px 16px;border-radius:20px;cursor:pointer;font-weight:600}
+.tabs button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.card .img{height:190px;background:var(--field) center/cover;display:flex;align-items:center;justify-content:center;font-size:40px}
+.body{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+.body h3{font-size:18px;color:var(--accent)}
+.desc{color:var(--dim);font-size:14px}
+.price{font-size:24px;font-weight:800;color:var(--ok)}
+.meta{display:flex;justify-content:space-between;font-size:13px;color:var(--dim)}
+.time{font-weight:700;color:var(--text)}
+.time.low{color:var(--bad)}
+.badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;background:rgba(239,68,68,.15);color:var(--bad);align-self:flex-start}
+.bid{display:grid;gap:8px;margin-top:6px}
+input,select,textarea{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--text);font-size:14px}
+textarea{resize:vertical;min-height:80px}
+label{font-size:13px;font-weight:600;color:var(--dim);display:block;margin-bottom:4px}
+details.hist{font-size:13px;color:var(--dim)}
+details.hist summary{cursor:pointer}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--dim);padding:60px 0;border:1px dashed var(--line);border-radius:16px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;z-index:50}
+.modal.open{display:flex}
+.form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;width:100%;max-width:520px;display:grid;gap:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.note{font-size:12px;color:var(--dim)}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;padding:10px 20px;border-radius:10px;font-weight:600;display:none;z-index:99}
+@media(max-width:600px){.two{grid-template-columns:1fr}h1{font-size:26px}}
+</style>
+<script src="theme.js"></script>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">BUGINGO Ally Baba</a>
+  <div class="nav-right">
+    <a href="buy-sell.html" class="btn alt small">← Buy & Sell</a>
+    <a href="index.html" class="btn alt small">Home</a>
+    <button class="theme-toggle" type="button"></button>
+  </div>
+</nav>
+
+<main>
+  <h1>Online <span>Auction</span></h1>
+  <p class="sub">Sellers list an item, buyers place bids, the highest bid when the timer ends wins.</p>
+
+  <div class="bar">
+    <div class="tabs">
+      <button id="tabLive" class="on" onclick="setTab('live')">Live</button>
+      <button id="tabEnded" onclick="setTab('ended')">Ended</button>
+    </div>
+    <button class="btn" onclick="openForm()">+ Create Auction</button>
+  </div>
+
+  <div id="list" class="grid"></div>
+</main>
+
+<!-- CREATE AUCTION -->
+<div class="modal" id="modal">
+  <form class="form" onsubmit="createAuction(event)">
+    <h2>Create an Auction</h2>
+    <div><label>Item title</label><input id="fTitle" required maxlength="60" placeholder="e.g. Samsung Galaxy A54"></div>
+    <div><label>Description</label><textarea id="fDesc" required maxlength="400" placeholder="Condition, size, what is included..."></textarea></div>
+    <div><label>Photo</label><input id="fImg" type="file" accept="image/*"></div>
+    <div class="two">
+      <div><label>Starting price (RWF)</label><input id="fStart" type="number" min="1" required></div>
+      <div><label>Minimum raise (RWF)</label><input id="fInc" type="number" min="1" value="1000" required></div>
+    </div>
+    <div><label>Auction length</label>
+      <select id="fDur">
+        <option value="1">1 hour</option><option value="6">6 hours</option><option value="24" selected>1 day</option>
+        <option value="72">3 days</option><option value="168">7 days</option>
+      </select></div>
+    <div class="two">
+      <div><label>Your name</label><input id="fSeller" required maxlength="40"></div>
+      <div><label>WhatsApp (e.g. 250788...)</label><input id="fPhone" required pattern="[0-9]{9,15}"></div>
+    </div>
+    <div><label>Seller PIN (needed to end/delete)</label><input id="fPin" required maxlength="10" placeholder="e.g. 1234"></div>
+    <div class="row"><button class="btn" type="submit">Publish Auction</button>
+      <button class="btn alt" type="button" onclick="closeForm()">Cancel</button></div>
+  </form>
+</div>
+<div id="toast"></div>
+
+<script>
+var KEY='auctions', tab='live', auctions=load();
+var NOTIFY_SECRET='d84de3063d0b0656d80b080bd0b5ade0'; // must match the NOTIFY_SECRET env var on Vercel
+
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(auctions))}
+  catch(e){toast('Storage full - delete old auctions or use a smaller photo')}}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function rwf(n){return Number(n).toLocaleString('en-US')+' RWF'}
+function cur(a){return a.bids.length?a.bids[a.bids.length-1].amount:a.start}
+function ended(a){return a.closed||Date.now()>=a.end}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';
+  clearTimeout(t._h);t._h=setTimeout(function(){t.style.display='none'},2600)}
+
+function fmt(ms){
+  if(ms<=0)return 'Ended';
+  var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
+  return (d?d+'d ':'')+(d||h?h+'h ':'')+m+'m '+(s%60)+'s';
+}
+
+function setTab(t){
+  tab=t;
+  document.getElementById('tabLive').className=t==='live'?'on':'';
+  document.getElementById('tabEnded').className=t==='ended'?'on':'';
+  render();
+}
+
+function render(){
+  var box=document.getElementById('list');
+  var items=auctions.filter(function(a){return (tab==='ended')===ended(a)})
+    .sort(function(a,b){return tab==='live'?a.end-b.end:b.end-a.end});
+  if(!items.length){
+    box.innerHTML='<div class="empty" style="grid-column:1/-1">'+
+      (tab==='live'?'No live auctions yet. Click "+ Create Auction" to list the first item.':'No ended auctions yet.')+'</div>';
+    return;
+  }
+  box.innerHTML=items.map(card).join('');
+}
+
+function card(a){
+  var done=ended(a), last=a.bids.length?a.bids[a.bids.length-1]:null;
+  var img=a.img?'style="background-image:url('+a.img+')"':'';
+  var h='<div class="card"><div class="img" '+img+'>'+(a.img?'':'📦')+'</div><div class="body">'+
+    '<h3>'+esc(a.title)+'</h3><p class="desc">'+esc(a.desc)+'</p>'+
+    '<div class="price">'+rwf(cur(a))+'</div>'+
+    '<div class="meta"><span>'+a.bids.length+' bid'+(a.bids.length===1?'':'s')+' · by '+esc(a.seller)+'</span>'+
+    '<span class="time" data-end="'+a.end+'" data-id="'+a.id+'">'+(done?'Ended':fmt(a.end-Date.now()))+'</span></div>';
+  if(done){
+    h+='<span class="badge">Auction ended</span>';
+    if(last){
+      var msg=encodeURIComponent('Hello '+a.seller+', I won the auction for "'+a.title+'" with '+rwf(last.amount)+'. My name is '+last.name+'.');
+      h+='<p><b style="color:var(--ok)">Winner: '+esc(last.name)+'</b> at '+rwf(last.amount)+'</p>'+
+        '<a class="btn small" target="_blank" href="https://wa.me/'+a.phone+'?text='+msg+'">Contact seller on WhatsApp</a>';
+    }else h+='<p class="desc">No bids were placed.</p>';
+  }else{
+    var min=cur(a)+(a.bids.length?a.inc:0);
+    h+='<div class="bid"><input id="n'+a.id+'" placeholder="Your name" maxlength="40">'+
+      '<input id="b'+a.id+'" type="number" min="'+min+'" placeholder="Min bid: '+min+'">'+
+      '<button class="btn" onclick="placeBid(\''+a.id+'\')">Place Bid</button></div>';
+  }
+  if(a.bids.length){
+    h+='<details class="hist"><summary>Bid history</summary>'+
+      a.bids.slice().reverse().map(function(b){
+        return '<div>'+esc(b.name)+' — '+rwf(b.amount)+' <small>('+new Date(b.t).toLocaleString()+')</small></div>'}).join('')+'</details>';
+  }
+  h+='<div class="row">'+(done?'':'<button class="btn alt small" onclick="endNow(\''+a.id+'\')">End now</button>')+
+    '<button class="btn warn small" onclick="del(\''+a.id+'\')">Delete</button></div></div></div>';
+  return h;
+}
+
+function placeBid(id){
+  var a=auctions.find(function(x){return x.id===id});
+  if(!a||ended(a)){render();return toast('This auction has ended')}
+  var name=document.getElementById('n'+id).value.trim();
+  var amt=parseInt(document.getElementById('b'+id).value,10);
+  var min=cur(a)+(a.bids.length?a.inc:0);
+  if(!name)return toast('Enter your name');
+  if(!amt||amt<min)return toast('Bid must be at least '+rwf(min));
+
+  function submitBid(){
+    a.bids.push({name:name,amount:amt,t:Date.now()});
+    // anti-sniping: bids in the last minute extend the timer by 1 minute
+    if(a.end-Date.now()<60000)a.end+=60000;
+    save();render();toast('Bid placed: '+rwf(amt));
+  }
+  if(window.AuthWidget){ window.AuthWidget.requireAccount(submitBid,'Create a free account to enter this auction and place bids.') }
+  else { submitBid() }
+}
+
+function pinOk(a){
+  var p=prompt('Enter the seller PIN:');
+  if(p===null)return false;
+  if(p!==a.pin){toast('Wrong PIN');return false}
+  return true;
+}
+function endNow(id){var a=auctions.find(function(x){return x.id===id});
+  if(a&&pinOk(a)){a.closed=true;save();render()}}
+function del(id){var a=auctions.find(function(x){return x.id===id});
+  if(a&&pinOk(a)&&confirm('Delete this auction?')){auctions=auctions.filter(function(x){return x.id!==id});save();render()}}
+
+/* ---------- create ---------- */
+function openForm(){
+  function go(){ document.getElementById('modal').classList.add('open') }
+  if(window.AuthWidget){ window.AuthWidget.requireAccount(go,'Create a free account to book and schedule your own auction.') }
+  else { go() }
+}
+function closeForm(){document.getElementById('modal').classList.remove('open')}
+
+function shrink(file,cb){
+  if(!file)return cb('');
+  var r=new FileReader();
+  r.onload=function(){
+    var im=new Image();
+    im.onload=function(){
+      var w=600,s=Math.min(1,w/im.width),c=document.createElement('canvas');
+      c.width=im.width*s;c.height=im.height*s;
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      cb(c.toDataURL('image/jpeg',0.7));
+    };
+    im.onerror=function(){cb('')};
+    im.src=r.result;
+  };
+  r.readAsDataURL(file);
+}
+
+function createAuction(e){
+  e.preventDefault();
+  var v=function(i){return document.getElementById(i).value.trim()};
+  shrink(document.getElementById('fImg').files[0],function(img){
+    var newAuction={
+      id:'a'+Date.now(),title:v('fTitle'),desc:v('fDesc'),img:img,
+      start:parseInt(v('fStart'),10),inc:parseInt(v('fInc'),10),
+      end:Date.now()+parseInt(v('fDur'),10)*3600000,
+      seller:v('fSeller'),phone:v('fPhone'),pin:v('fPin'),bids:[],closed:false
+    };
+    auctions.push(newAuction);
+    save();e.target.reset();closeForm();setTab('live');toast('Auction published!');
+    notifySubscribers('auction', newAuction.title, newAuction.desc, location.href, 'Starting bid: '+rwf(newAuction.start));
+  });
+}
+
+function notifySubscribers(type,title,description,link,extra){
+  fetch('/api/notify',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','X-Notify-Secret':NOTIFY_SECRET},
+    body:JSON.stringify({type:type,title:title,description:description,link:link,extra:extra})
+  }).catch(function(){ /* fail silently */ });
+}
+
+/* ---------- live timers ---------- */
+setInterval(function(){
+  var need=false;
+  document.querySelectorAll('.time[data-end]').forEach(function(el){
+    var left=el.dataset.end-Date.now();
+    el.textContent=fmt(left);
+    el.classList.toggle('low',left>0&&left<300000);
+    if(left<=0)need=true;
+  });
+  if(need)render();
+},1000);
+
+render();
+</script>
+<script src="js/auth-widget.js" defer></script>
+</body>
+</html>

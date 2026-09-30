@@ -1,0 +1,6 @@
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Link to your sitemap
+Sitemap: https://jarvis-tech-psi.vercel.app/sitemap.xml
