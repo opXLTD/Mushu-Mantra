@@ -7,7 +7,7 @@
 <meta name="description" content="Job, scholarship, admission and internship opportunities — with application support.">
 <link rel="icon" type="image/png" href="../favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0"></script>
 <script src="../theme.js"></script>
 <style>
 :root{
@@ -94,7 +94,7 @@ footer{text-align:center;padding:30px;color:var(--dim);font-size:13px;border-top
 const SUPABASE_URL = "https://mfnndtyhmlofqegzdbrw.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mbm5kdHlobWxvZnFlZ3pkYnJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MDAxNzIsImV4cCI6MjEwNTk3NjE3Mn0.wj9YWt67wDVp5cl6tIBlvywz7nshCSBg9cJUGp--cBA"; 
     
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function esc(s){ return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -124,7 +124,7 @@ function card(p) {
 async function loadOpportunities() {
   const grid = document.getElementById('grid');
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('poster_requests')
       .select('*')
       .eq('published', true)
