@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin | BUGINGO Ally Baba</title>
 <meta name="robots" content="noindex, nofollow">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{--bg:#0f1117;--card:#171a23;--border:#262b38;--text:#eef0f5;--muted:#9aa1b1;--accent:#4f7dff;}
@@ -131,11 +131,11 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const NOTIFY_SECRET = "d84de3063d0b0656d80b080bd0b5ade0"; // must match the NOTIFY_SECRET env var on Vercel
 // ==============================
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let session = null;
 
 async function checkSession() {
-  const { data } = await supabase.auth.getSession();
+  const { data } = await sb.auth.getSession();
   session = data.session;
   if (session) {
     document.getElementById('loginScreen').style.display = 'none';
@@ -151,13 +151,13 @@ async function checkSession() {
 document.getElementById('loginBtn').onclick = async () => {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await sb.auth.signInWithPassword({ email, password });
   document.getElementById('loginError').textContent = error ? error.message : '';
   if (!error) checkSession();
 };
 
 document.getElementById('logoutBtn').onclick = async () => {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   checkSession();
 };
 
@@ -171,17 +171,17 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 async function loadTraffic() {
-  const { count } = await supabase.from('page_views').select('*', { count: 'exact', head: true });
+  const { count } = await sb.from('page_views').select('*', { count: 'exact', head: true });
   document.getElementById('totalViews').textContent = count ?? '0';
 
-  const { data } = await supabase.from('page_views').select('*').order('created_at', { ascending: false }).limit(20);
+  const { data } = await sb.from('page_views').select('*').order('created_at', { ascending: false }).limit(20);
   document.getElementById('viewsTable').innerHTML = (data || []).map(v =>
     `<tr><td>${v.page}</td><td>${v.referrer || '–'}</td><td>${new Date(v.created_at).toLocaleString()}</td></tr>`
   ).join('');
 }
 
 async function loadLeads() {
-  const { data } = await supabase.from('leads').select('*').order('created_at', { ascending: false }).limit(50);
+  const { data } = await sb.from('leads').select('*').order('created_at', { ascending: false }).limit(50);
   document.getElementById('leadsTable').innerHTML = (data || []).map(l =>
     `<tr><td>${l.name || '–'}</td><td>${l.email || '–'}</td><td>${l.phone || '–'}</td><td>${l.message || '–'}</td><td>${l.source || '–'}</td><td>${new Date(l.created_at).toLocaleString()}</td></tr>`
   ).join('');
@@ -275,7 +275,7 @@ document.getElementById('publishBtn').onclick = async () => {
     statusEl.textContent = "This flyer wasn't saved, so it can't be published. Try generating it again.";
     return;
   }
-  const { error } = await supabase
+  const { error } = await sb
     .from('poster_requests')
     .update({ published: true, published_at: new Date().toISOString() })
     .eq('id', currentFlyerId);
@@ -302,7 +302,7 @@ document.getElementById('publishBtn').onclick = async () => {
 };
 
 async function loadPublished() {
-  const { data } = await supabase
+  const { data } = await sb
     .from('poster_requests')
     .select('*')
     .order('created_at', { ascending: false })
@@ -322,8 +322,8 @@ async function loadPublished() {
 }
 
 window.togglePublish = async (id, makePublished) => {
-  const { data: row } = await supabase.from('poster_requests').select('*').eq('id', id).single();
-  await supabase.from('poster_requests').update({
+  const { data: row } = await sb.from('poster_requests').select('*').eq('id', id).single();
+  await sb.from('poster_requests').update({
     published: makePublished,
     published_at: makePublished ? new Date().toISOString() : null,
   }).eq('id', id);
