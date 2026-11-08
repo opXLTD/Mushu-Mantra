@@ -38,6 +38,62 @@ Respond ONLY with a single JSON object (no markdown fences, no commentary) with 
 }
 If a field is not present in the source, use an empty string or empty array — do not invent content.`;
 
+// ---------- AI providers ----------
+async function callGemini(fileBase64, mediaType, userText) {
+  // Free tier: create a key at https://aistudio.google.com/apikey and set GEMINI_API_KEY on Vercel.
+  // Model is configurable so you can switch without code changes if Google renames/retires one.
+  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+    body: JSON.stringify({
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: [{
+        role: 'user',
+        parts: [
+          { inline_data: { mime_type: mediaType, data: fileBase64 } },
+          { text: userText },
+        ],
+      }],
+      generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 2000, temperature: 0.2 },
+    }),
+  });
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error(`Gemini ${r.status} (model ${model}): ${t.slice(0, 500)}`);
+  }
+  const data = await r.json();
+  const text = (data.candidates?.[0]?.content?.parts || []).map((p) => p.text || '').join('').trim();
+  if (!text) {
+    throw new Error('Gemini returned no text (blocked or empty): ' + JSON.stringify(data.promptFeedback || data.candidates?.[0]?.finishReason || ''));
+  }
+  return text;
+}
+
+async function callClaude(fileBase64, mediaType, isPdf, userText) {
+  const fileBlock = isPdf
+    ? { type: 'document', source: { type: 'base64', media_type: mediaType, data: fileBase64 } }
+    : { type: 'image', source: { type: 'base64', media_type: mediaType, data: fileBase64 } };
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
+      max_tokens: 1500,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: [fileBlock, { type: 'text', text: userText }] }],
+    }),
+  });
+  if (!r.ok) throw new Error(`Claude ${r.status}: ${(await r.text()).slice(0, 500)}`);
+  const data = await r.json();
+  return (data.content || []).map((b) => (b.type === 'text' ? b.text : '')).join('').trim();
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Use POST' });
@@ -59,48 +115,28 @@ module.exports = async function handler(req, res) {
     }
 
     const isPdf = mediaType === 'application/pdf';
-    const fileBlock = isPdf
-      ? { type: 'document', source: { type: 'base64', media_type: mediaType, data: fileBase64 } }
-      : { type: 'image', source: { type: 'base64', media_type: mediaType, data: fileBase64 } };
-
     const userText = `Company running this application-support service: ${companyName || '(not provided)'}
 Company contact for "need help applying": ${companyContact || '(not provided)'}
 Extra notes from the admin: ${notes || '(none)'}
 
 Analyze the attached opportunity document and return the JSON described in your instructions.`;
 
-    // 3. Call the real AI
-    const aiResponse = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 1500,
-        system: SYSTEM_PROMPT,
-        messages: [
-          { role: 'user', content: [fileBlock, { type: 'text', text: userText }] },
-        ],
-      }),
-    });
-
-    if (!aiResponse.ok) {
-      const errText = await aiResponse.text();
-      return res.status(502).json({ error: 'AI request failed', details: errText });
+    // 3. Call the AI. AI_PROVIDER=gemini (default, has a free tier) or claude (paid credits).
+    const provider = (process.env.AI_PROVIDER || 'gemini').toLowerCase();
+    let rawText;
+    try {
+      rawText = provider === 'claude'
+        ? await callClaude(fileBase64, mediaType, isPdf, userText)
+        : await callGemini(fileBase64, mediaType, userText);
+    } catch (aiErr) {
+      console.error(`AI call failed (${provider}):`, aiErr.message);
+      return res.status(502).json({ error: 'AI request failed', provider, details: aiErr.message });
     }
-
-    const aiData = await aiResponse.json();
-    const rawText = (aiData.content || [])
-      .map((block) => (block.type === 'text' ? block.text : ''))
-      .join('')
-      .trim();
 
     let flyer;
     try {
-      const cleaned = rawText.replace(/^```json|```$/g, '').trim();
+      // Strip optional ```json fences, then parse
+      const cleaned = rawText.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim();
       flyer = JSON.parse(cleaned);
     } catch (e) {
       return res.status(502).json({ error: 'AI returned unparseable output', raw: rawText });
@@ -124,6 +160,7 @@ Analyze the attached opportunity document and return the JSON described in your 
 
     return res.status(200).json({ flyer, id: inserted.id });
   } catch (err) {
+    console.error('generate-flyer failed:', err);
     return res.status(500).json({ error: 'Server error', details: String(err) });
   }
 };
