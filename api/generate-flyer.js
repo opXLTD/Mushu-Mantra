@@ -3,7 +3,38 @@
 // Keeps your Anthropic API key secret and does the real AI work.
 
 const { createClient } = require('@supabase/supabase-js');
-const { requireAdmin } = require('../lib/requireAdmin');
+
+// Admin check lives in this file so deployment needs no other module.
+async function requireAdmin(req, res, supabase) {
+  const token = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
+  if (!token) {
+    res.status(401).json({ error: 'Missing auth token' });
+    return null;
+  }
+
+  const { data: userData, error: userErr } = await supabase.auth.getUser(token);
+  if (userErr || !userData?.user) {
+    res.status(401).json({ error: 'Not authorized' });
+    return null;
+  }
+
+  const { data: row, error: adminErr } = await supabase
+    .from('admins')
+    .select('user_id')
+    .eq('user_id', userData.user.id)
+    .maybeSingle();
+
+  if (adminErr) {
+    console.error('requireAdmin: admins lookup failed:', adminErr.message);
+    res.status(500).json({ error: 'Could not verify admin status', details: adminErr.message });
+    return null;
+  }
+  if (!row) {
+    res.status(403).json({ error: 'Admins only' });
+    return null;
+  }
+  return userData.user;
+}
 
 // This is your pasted prompt, turned into the AI's system instructions.
 const SYSTEM_PROMPT = `I am going to provide you with a job vacancy, university admission, scholarship, fellowship, internship, training opportunity, or another opportunity document in the form of a PDF, screenshot, image, poster, website capture, or file.
