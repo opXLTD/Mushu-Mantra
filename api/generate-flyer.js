@@ -3,6 +3,7 @@
 // Keeps your Anthropic API key secret and does the real AI work.
 
 const { createClient } = require('@supabase/supabase-js');
+const { requireAdmin } = require('../lib/requireAdmin');
 
 // This is your pasted prompt, turned into the AI's system instructions.
 const SYSTEM_PROMPT = `I am going to provide you with a job vacancy, university admission, scholarship, fellowship, internship, training opportunity, or another opportunity document in the form of a PDF, screenshot, image, poster, website capture, or file.
@@ -43,19 +44,13 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    // 1. Verify the caller is a logged-in admin (Supabase auth token from the browser)
-    const authHeader = req.headers.authorization || '';
-    const token = authHeader.replace('Bearer ', '');
-    if (!token) return res.status(401).json({ error: 'Missing auth token' });
-
+    // 1. Verify the caller is a logged-in ADMIN (must exist in the `admins` table)
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
-    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
-    if (userErr || !userData?.user) {
-      return res.status(401).json({ error: 'Not authorized' });
-    }
+    const admin = await requireAdmin(req, res, supabase);
+    if (!admin) return; // requireAdmin already sent the 401/403 response
 
     // 2. Read the uploaded file + company info from the request
     const { fileBase64, mediaType, companyName, companyContact, notes } = req.body || {};
