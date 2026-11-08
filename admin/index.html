@@ -223,7 +223,7 @@ document.getElementById('generateBtn').onclick = async () => {
       }),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to generate');
+    if (!res.ok) throw new Error((data.error || 'Failed to generate') + (data.details ? ' — ' + String(data.details).slice(0, 400) : ''));
     currentFlyerId = data.id || null;
     document.getElementById('publishStatus').textContent = '';
     renderFlyer(data.flyer);
